@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" title="SampleNetworkInfo">
+	
+	<fx:Script>
+		<![CDATA[
+			import flash.events.ErrorEvent;
+			import flash.events.MouseEvent;
+			import flash.events.UncaughtErrorEvent;
+			import flash.net.NetworkInfo;
+			import flash.net.NetworkInterface;
+			
+			import mx.collections.ArrayCollection;
+			
+			[Bindable]
+			protected var ac:ArrayCollection = new ArrayCollection();
+			
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				var ni:NetworkInfo = NetworkInfo.networkInfo;
+				var interfaceVector:Vector.<NetworkInterface> = ni.findInterfaces();
+				for each (var item:NetworkInterface in interfaceVector)
+				{
+					ac.addItem(item);
+				}
+			}
+			
+			protected function msgFunc(item:NetworkInterface ):String
+			{
+				item = item as NetworkInterface;
+				return item.hardwareAddress+" active: " + item.active + " mtu: " + item.mtu;
+			}
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:VerticalLayout paddingTop="20" paddingBottom="20" paddingLeft="20" paddingRight="20" gap="40" horizontalAlign="center"/>
+	</s:layout>
+	
+	<s:TextArea width="95%" verticalAlign="justify"
+			 text="The list below displays the available network interfaces found on the device."/>
+	<s:List id="list" dataProvider="{ac}" width="95%" height="80%">
+		<s:itemRenderer>
+			<fx:Component>
+				<s:MobileIconItemRenderer labelField="name" messageField="hardwareAddress" height="48"  
+										  paddingTop="8" paddingBottom="8" verticalGap="8"/>
+			</fx:Component>
+		</s:itemRenderer>
+	</s:List>
+	<s:Button label="Find Network Interfaces" click="button1_clickHandler(event)" horizontalCenter="0"/>    
+</s:View>

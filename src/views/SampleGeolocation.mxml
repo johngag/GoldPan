@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" viewActivate="init()"
+		xmlns:s="library://ns.adobe.com/flex/spark" title="SampleGeolocation">
+	
+	<fx:Script>
+		<![CDATA[
+			import flash.events.GeolocationEvent;
+			import flash.sensors.Geolocation;
+			import mx.events.FlexEvent;
+			import spark.components.supportClasses.MobileTextField;
+			
+			protected var g:Geolocation = new Geolocation();    
+			
+			protected function init():void  
+			{
+				if (Geolocation.isSupported)
+				{
+					if (g.muted)
+					{
+						log.text = "Access to GPS has been muted";
+						return;
+					}
+					
+					log.text = "Finding Location...";
+					g.addEventListener(GeolocationEvent.UPDATE, onUpdate);
+					addEventListener(FlexEvent.REMOVING,onRemove);
+				}
+				else
+				{
+					currentState = "unsupported";
+					lblSupport.text = "Geolocation is not supported on this device.";
+				}	
+			}
+			
+			protected function onUpdate(event:GeolocationEvent):void
+			{
+				trace("Update event called");
+				log.text = "latitude = " + event.latitude + 
+					"\nlongitude = " + event.longitude +
+					"\naltitude = " + event.altitude +
+					"\nverticalAccuracy = " + event.verticalAccuracy +
+					"\nhorizontalAccuracy = " + event.horizontalAccuracy +
+					"\nspeed = " + event.speed +
+					"\nheading = " + event.heading +
+					"\ntimestamp = " + event.timestamp;		
+				// auto-scroll the text area to the latest text
+				MobileTextField(log.textDisplay).scrollV = MobileTextField(log.textDisplay).scrollV+1;
+			}
+			
+			protected function onRemove(event:FlexEvent):void
+			{
+				g.removeEventListener(GeolocationEvent.UPDATE, onUpdate);				
+			}
+			
+		]]>
+	</fx:Script>
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="unsupported"/>
+	</s:states>
+	
+	<s:layout>
+		<s:VerticalLayout paddingTop="20" paddingBottom="20" paddingLeft="20" paddingRight="20" gap="40"/>
+	</s:layout>
+	
+	<s:Label id="lblSupport" includeIn="unsupported" width="95%"/>
+	<s:TextArea width="98%" 
+				text="The Geolocation sample displays updates to the current geographical location of the device in the form of latitudinal and longitudinal coordinates." includeIn="normal"/>
+	<s:VGroup width="400" includeIn="normal">
+		<s:Label text="Event Log:"/>
+		<s:TextArea id="log" editable="false" height="400"/>
+	</s:VGroup>
+	
+</s:View>

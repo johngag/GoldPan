@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" creationComplete="init()"
+		xmlns:s="library://ns.adobe.com/flex/spark" title="SampleMultitouch">
+	
+	<fx:Declarations>
+		<fx:Component className="Circle">
+			<s:Ellipse width="140" height="140">
+				<s:fill>
+					<s:SolidColor color="blue"/>
+				</s:fill>
+			</s:Ellipse>
+		</fx:Component>
+	</fx:Declarations>	
+	
+	<fx:Script>
+		<![CDATA[
+			import flash.events.PressAndTapGestureEvent;
+			import flash.events.TransformGestureEvent;
+			import flash.geom.Point;
+			import flash.ui.Multitouch;
+			import flash.ui.MultitouchInputMode;
+			
+			import spark.components.supportClasses.MobileTextField;
+			
+			protected var circles:Object = new Object();
+			protected function init():void
+			{    
+				if (!Multitouch.supportsTouchEvents)
+					currentState = "unsupported";
+				else 
+				{
+					currentState = "normal";
+					Multitouch.inputMode = MultitouchInputMode.TOUCH_POINT;
+					log.appendText("max touch points value " + Multitouch.maxTouchPoints +"\n");
+					this.stage.addEventListener(TouchEvent.TOUCH_BEGIN,onTouchBegin);
+					this.stage.addEventListener(TouchEvent.TOUCH_END,onTouchEnd);
+					this.stage.addEventListener(TouchEvent.TOUCH_MOVE,onTouchMove); 
+					this.stage.addEventListener(TouchEvent.TOUCH_OUT,onTouchOut);
+					this.stage.addEventListener(TouchEvent.TOUCH_OVER,onTouchOver);
+					this.stage.addEventListener(TouchEvent.TOUCH_ROLL_OUT,onTouchRollOut);
+					this.stage.addEventListener(TouchEvent.TOUCH_ROLL_OVER,onTouchRollOver);
+					this.stage.addEventListener(TouchEvent.TOUCH_TAP,onTouchTap);
+				}
+			}
+			
+			protected function onTouchBegin(event:TouchEvent):void
+			{
+				log.appendText("Touch Begin\n");
+				var c:Circle = new Circle();
+				c.x = event.localX - 70;
+				c.y = event.localY - 70;
+				addElement(c);
+				circles[event.touchPointID] = c;
+			}
+
+			protected function onTouchEnd(event:TouchEvent):void
+			{
+				log.appendText("Touch End\n");
+				if (circles[event.touchPointID] != null)
+				{
+					removeElement(circles[event.touchPointID]);
+					delete circles[event.touchPointID];
+				}
+				else
+				{
+					log.appendText("couldn't find " + event.touchPointID);
+					MobileTextField(log.textDisplay).scrollV = MobileTextField(log.textDisplay).scrollV+1;
+				}
+			}
+
+			protected function onTouchMove(event:TouchEvent):void
+			{
+				log.appendText("Touch Move\n");
+				MobileTextField(log.textDisplay).scrollV = MobileTextField(log.textDisplay).scrollV+1;
+				if (circles[event.touchPointID] != null)
+				{
+					circles[event.touchPointID].x = event.localX - 70;
+					circles[event.touchPointID].y = event.localY - 70;
+				}
+				else
+				{
+					log.appendText("couldn't find " + event.touchPointID);
+					MobileTextField(log.textDisplay).scrollV = MobileTextField(log.textDisplay).scrollV+1;
+				}
+			}
+
+			protected function onTouchOut(event:TouchEvent):void
+			{
+				log.appendText("Touch Out\n");
+				MobileTextField(log.textDisplay).scrollV = MobileTextField(log.textDisplay).scrollV+1;
+			}
+
+			protected function onTouchOver(event:TouchEvent):void
+			{
+				log.appendText("Touch Over\n");
+				MobileTextField(log.textDisplay).scrollV = MobileTextField(log.textDisplay).scrollV+1;
+			}
+
+			protected function onTouchRollOut(event:TouchEvent):void
+			{
+				log.appendText("Touch Roll Out\n");
+				MobileTextField(log.textDisplay).scrollV = MobileTextField(log.textDisplay).scrollV+1;
+			}
+
+			protected function onTouchRollOver(event:TouchEvent):void
+			{
+				log.appendText("Touch Roll Over\n");	
+				MobileTextField(log.textDisplay).scrollV = MobileTextField(log.textDisplay).scrollV+1;
+			}
+
+			protected function onTouchTap(event:TouchEvent):void
+			{
+				log.appendText("Touch Tap\n");	
+				MobileTextField(log.textDisplay).scrollV = MobileTextField(log.textDisplay).scrollV+1;
+			}
+
+		]]>
+	</fx:Script>
+	
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="unsupported"/>
+	</s:states>
+	
+	<s:Label text="This device does not support multitouch." includeIn="unsupported" horizontalCenter="0" verticalCenter="0"/>
+	<s:TextArea width="95%" verticalAlign="justify" color="0xFFFFFF" includeIn="normal" paddingTop="10" paddingLeft="10" paddingRight="10"
+				text="Touch the screen to see a circle show up at the location where the touch event was received."/>
+	<s:VGroup width="400" includeIn="normal" bottom="10">
+		<s:Label text="Event Log:"/>
+		<s:TextArea id="log" editable="false" height="300"/>
+		<s:Button label="Clear log" click="log.text=''"/>
+	</s:VGroup>
+</s:View>

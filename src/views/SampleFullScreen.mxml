@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+		creationComplete="view1_creationCompleteHandler(event)"
+		title="SampleFullScreen">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+
+			protected function view1_creationCompleteHandler(event:FlexEvent):void
+			{
+				if (stage.displayState == StageDisplayState.FULL_SCREEN_INTERACTIVE)
+				{
+					chk.selected = true;
+				}
+			}
+
+			protected function chk_changeHandler(event:Event):void
+			{
+				if (chk.selected)
+					stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
+				else stage.displayState = StageDisplayState.NORMAL;
+			}
+
+		]]>
+	</fx:Script>
+	<s:CheckBox id="chk" label="Full Screen" change="chk_changeHandler(event)"/>
+</s:View>

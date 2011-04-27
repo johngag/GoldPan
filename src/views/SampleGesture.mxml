@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009"  creationComplete="init()"
+		xmlns:s="library://ns.adobe.com/flex/spark" title="SampleGesture">
+	
+	<fx:Script>
+		<![CDATA[
+			import flash.events.PressAndTapGestureEvent;
+			import flash.events.TransformGestureEvent;
+			import flash.geom.Point;
+			import flash.ui.Multitouch;
+			import flash.ui.MultitouchInputMode;
+			
+			protected function init():void
+			{   
+				Multitouch.inputMode = MultitouchInputMode.GESTURE;
+				
+				if (!Multitouch.supportsGestureEvents)
+					currentState = "unsupported";
+				else 
+				{
+					currentState = "normal";
+					for each (var item:String in Multitouch.supportedGestures)
+					{
+						if (item == TransformGestureEvent.GESTURE_PAN)
+							img.addEventListener(TransformGestureEvent.GESTURE_PAN, onPan);
+						else if (item == TransformGestureEvent.GESTURE_ROTATE)
+							img.addEventListener(TransformGestureEvent.GESTURE_ROTATE, onRotate);
+						else if (item == TransformGestureEvent.GESTURE_SWIPE)
+							img.addEventListener(TransformGestureEvent.GESTURE_SWIPE, onSwipe);
+						else if (item == TransformGestureEvent.GESTURE_ZOOM)
+							img.addEventListener(TransformGestureEvent.GESTURE_ZOOM, onZoom);
+					}
+				}
+			}
+			
+			protected function onRotate(e:TransformGestureEvent):void
+			{
+				trace("On rotate...");
+				img.rotation += e.rotation;
+			}
+			
+			protected function onZoom(e:TransformGestureEvent):void
+			{
+				trace("On Zoom ");
+				img.scaleX *= e.scaleX;
+				img.scaleY *= e.scaleY;
+			}
+			
+			protected function onPan(e:TransformGestureEvent):void
+			{
+				trace("On pan... " + e.offsetX + " offset Y " + e.offsetY);
+				var prevPoint:Point = new Point(img.x,img.y);
+				img.x += e.offsetX*3;
+				img.y += e.offsetY*3;
+			}
+			
+			protected function onSwipe(e:TransformGestureEvent):void
+			{
+				trace("On swipe " + e.stageX);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:states>
+		<s:State name="normal"/>
+		<s:State name="unsupported"/>
+	</s:states>
+	
+	<s:Label text="This device does not support gestures" includeIn="unsupported"/>
+	<s:TextArea width="{this.stage.width-15}" verticalAlign="justify" color="0xFFFFFF" includeIn="normal" horizontalCenter="0" top="10"
+				text="Rotate, zoom, swipe and pan this photo using a gesture supported device."/>
+	<s:Image id="img" source="@Embed(source='assets/launchpad_butterfly.jpg')" horizontalCenter="0" verticalCenter="10" width="400" height="450" 
+			 includeIn="normal"/>	    
+</s:View>

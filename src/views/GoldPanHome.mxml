@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" title="Home" creationComplete="init()">
+
+	<fx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+
+			[Bindable]
+			[Embed("assets/launchpad_default_icon32.png")]
+			public var fbIcon:Class;
+
+			[Bindable]
+			protected var viewsAC:ArrayCollection = new ArrayCollection(); 
+
+			protected function init():void
+			{
+				viewsAC.addItem({label:"Back/Home/Search Events", icon:fbIcon});
+				viewsAC.addItem({label:"Full Screen", icon:fbIcon});
+				viewsAC.addItem({label:"Geolocation/GPS", icon:fbIcon});
+				viewsAC.addItem({label:"Local DB", icon:fbIcon});
+				viewsAC.addItem({label:"Gesture", icon:fbIcon});
+				viewsAC.addItem({label:"Multitouch", icon:fbIcon});
+				viewsAC.addItem({label:"Mobile App Anatomy", icon:fbIcon});
+				viewsAC.addItem({label:"Network Info", icon:fbIcon});
+				viewsAC.addItem({label:"Rotate Screen", icon:fbIcon});
+				viewsAC.addItem({label:"SMS/Tel Text URI", icon:fbIcon});
+			}
+
+			protected function onSampleSelect():void
+			{
+				if (viewsList.selectedItem.label=="Back/Home/Search Events")
+					navigator.pushView(views.SampleBackMenuSearchEvent);
+
+				if (viewsList.selectedItem.label=="Geolocation/GPS")
+					navigator.pushView(views.SampleGeolocation);
+
+				if (viewsList.selectedItem.label=="Local DB")
+					navigator.pushView(views.SampleSimpleDB);
+
+				if (viewsList.selectedItem.label=="Full Screen")
+					navigator.pushView(views.SampleFullScreen);
+
+				if (viewsList.selectedItem.label=="Gesture")
+					navigator.pushView(views.SampleGesture);
+
+				if (viewsList.selectedItem.label=="Multitouch")
+					navigator.pushView(views.SampleMultitouch);
+
+				if (viewsList.selectedItem.label=="Mobile App Anatomy")
+					navigator.pushView(views.SampleMobileAppAnatomy);
+
+				if (viewsList.selectedItem.label=="Network Info")
+					navigator.pushView(views.SampleNetworkInfo);
+
+				if (viewsList.selectedItem.label=="Rotate Screen")
+					navigator.pushView(views.SampleRotateScreen);
+
+				if (viewsList.selectedItem.label=="SMS/Tel Text URI")
+					navigator.pushView(views.SampleSMS);
+
+			}
+		]]>
+	</fx:Script>
+
+	<s:navigationContent/>
+		<s:List id="viewsList" top="0" bottom="0" left="0" right="0" dataProvider="{viewsAC}" change="onSampleSelect()">
+			<s:itemRenderer>
+				<fx:Component>
+					<s:MobileIconItemRenderer iconField="icon"/>
+				</fx:Component>
+			</s:itemRenderer>
+		</s:List>
+</s:View>

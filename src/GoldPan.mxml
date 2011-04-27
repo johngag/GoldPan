@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:MobileApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark"
+	xmlns:mx="library://ns.adobe.com/flex/mx"
+	firstView="views.GoldPanHome"
+	splashScreenImage="@Embed('assets/launchpad_title.png')" splashScreenScaleMode="stretch"
+ 	sessionCachingEnabled="true" initialize="onInitialize()"
+	applicationComplete="onApplicationComplete()">
+
+	<fx:Script>
+		<![CDATA[
+			import flash.events.UncaughtErrorEvent; // Requires Flash Player 10.1
+			import air.net.URLMonitor;
+			import mx.events.FlexEvent;
+
+			protected var monitor:URLMonitor;
+			protected function onApplicationComplete():void
+			{
+				// Request to be notified when the display state changes (minimized, maximized)
+				addEventListener(NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGING, onDisplayStateChange);
+
+				// Request to be notified when this application is activated (brought forward as the active window)
+				// or deactivated
+				NativeApplication.nativeApplication.addEventListener(Event.ACTIVATE, onActivate);
+				NativeApplication.nativeApplication.addEventListener(Event.DEACTIVATE, onDeactivate);
+
+				// Invoke listener - request to be notified when the AIR app is invoked (started), this could occur from the command line, UI or
+				// from opening an associated file
+				NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvoke);
+
+				// Get notified whan a global error occurs
+				loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onError);
+
+				// Capture exiting event
+				NativeApplication.nativeApplication.addEventListener(Event.EXITING,onAppExiting);
+
+				// Detecting online/offline network connectivity with a URLMonitor
+				monitor = new URLMonitor(new URLRequest("http://www.adobe.com")); // change URL to URL desired
+				monitor.addEventListener(StatusEvent.STATUS, onStatusChange);
+				monitor.pollInterval = 20000;// Milliseconds
+				monitor.start();
+
+				// Set the idle mode to KEEP AWAKE
+				NativeApplication.nativeApplication.systemIdleMode = SystemIdleMode.KEEP_AWAKE;
+
+				// Request to be notified when data is being persisted
+				NativeApplication.nativeApplication.addEventListener(FlexEvent.APPLICATION_PERSIST, onPersist);
+				NativeApplication.nativeApplication.addEventListener(FlexEvent.APPLICATION_PERSISTING, onPersisting);
+
+			}
+
+			// The application display state has changed
+			protected function onDisplayStateChange(e:NativeWindowDisplayStateEvent):void
+			{
+				trace("Display State Changed from " + e.beforeDisplayState + " to " + e.afterDisplayState);
+			}
+
+			// The application is now in the foreground and active, restore the frameRate to the default
+			protected function onActivate(event:Event):void
+ 			{
+				trace("Handling application activate event");
+				stage.frameRate=24; 
+			}
+
+			// Handle the application being sent to the background, garbage collect and lower frame rate to use less resources
+			protected function onDeactivate(event:Event):void 
+			{
+				trace("Handling application deactivate event");
+				System.gc();
+				stage.frameRate=2;
+			}
+
+			// Called when application is first invoked
+			protected function onInvoke(invokeEvt:InvokeEvent):void 
+			{
+				trace("Handling invoke event");
+			}
+
+			// Handle Global Errors
+			protected function onError(e:UncaughtErrorEvent):void
+			{
+    			e.preventDefault();
+    			trace("An error has occurred and been caught by the global error handler: " + e.error.toString(), "My Global Error Handler");
+			}
+
+			// Called when application exits
+			protected function onAppExiting(e:Event):void
+			{
+				trace("Handling application exit event");
+			}
+
+			// Handles when the HTTP Network status has changed.
+			protected function onStatusChange(e:StatusEvent):void
+			{
+				if (monitor.available) 
+				{
+					trace("Internet is available");
+				} else {
+					trace("No Internet access currently available");
+				}
+			}
+
+			// Called when the application is first initializing
+			protected function onInitialize():void
+			{
+				this.addEventListener(FlexEvent.APPLICATION_RESTORE,onRestore);
+				this.addEventListener(FlexEvent.APPLICATION_RESTORING,onRestoring);
+			}
+
+			// Called when application is about to persist data (can call cancel if this is not desired)
+			protected function onPersisting(e:FlexEvent):void
+			{
+				trace("Handling persisting event");
+			}
+
+			// Called when the data has been successfully persisted
+			protected function onPersist(event:FlexEvent):void {
+				trace("Handling persist complete event");
+			}
+
+			// Called when application is about to restore data (can call cancel if this is not desired)
+			protected function onRestoring(e:FlexEvent):void
+			{
+				trace("Handling restoring event");
+			}
+
+			// Called when the data has been successfully restored
+			protected function onRestore(event:FlexEvent):void {
+				trace("Handling restore complete event");
+			}
+		]]>
+	</fx:Script>
+
+	<s:navigationContent>
+		<s:Button icon="@Embed('assets/launchpad_home.png')" click="navigator.popToFirstView()"/>
+	</s:navigationContent>
+</s:MobileApplication>
